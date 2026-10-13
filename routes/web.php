@@ -1,30 +1,34 @@
+
 <?php
 
 use App\Http\Controllers\JobSeekerRegistrationController;
 use App\Http\Controllers\RecruiterRegistrationController;
 use App\Http\Controllers\JobSeeker\JobSeekerController;
 use App\Http\Controllers\Recruiter\JobController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Recruiter\CandidateController;
 use App\Http\Controllers\Recruiter\ApplicationController;
 use App\Http\Controllers\Recruiter\ProfileController;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
+// Job Seeker Registration
 Route::get('/register/job-seeker', [JobSeekerRegistrationController::class, 'create'])
     ->name('job-seeker.register');
 
 Route::post('/register/job-seeker', [JobSeekerRegistrationController::class, 'store'])
     ->name('job-seeker.register.store');
 
+// Recruiter Registration
 Route::get('/register/recruiter', [RecruiterRegistrationController::class, 'create'])
     ->name('recruiter.register');
 
 Route::post('/register/recruiter', [RecruiterRegistrationController::class, 'store'])
     ->name('recruiter.register.store');
 
+// General Profile Routes
 Route::middleware('auth')->group(function () {
 
     Route::get('/profile', [ProfileController::class, 'edit'])
@@ -39,6 +43,7 @@ Route::middleware('auth')->group(function () {
 
 require __DIR__ . '/auth.php';
 
+// Recruiter Routes
 Route::middleware(['auth', 'role:recruiter'])
     ->prefix('recruiter')
     ->name('recruiter.')
@@ -48,6 +53,7 @@ Route::middleware(['auth', 'role:recruiter'])
             return view('recruiter.dashboard');
         })->name('dashboard');
 
+        // Job Management
         Route::get('/jobs', [JobController::class, 'index'])
             ->name('jobs.index');
 
@@ -69,12 +75,14 @@ Route::middleware(['auth', 'role:recruiter'])
         Route::patch('/jobs/{job}/status', [JobController::class, 'status'])
             ->name('jobs.status');
 
+        // Candidates & Applications
         Route::get('/candidates', [CandidateController::class, 'index'])
             ->name('candidates');
 
         Route::get('/applications', [ApplicationController::class, 'index'])
             ->name('applications');
 
+        // Recruiter Profile
         Route::get('/profile', [ProfileController::class, 'edit'])
             ->name('profile');
 
@@ -82,6 +90,7 @@ Route::middleware(['auth', 'role:recruiter'])
             ->name('profile.update');
     });
 
+// Job Seeker Routes
 Route::middleware(['auth', 'role:job_seeker'])
     ->prefix('job-seeker')
     ->name('job-seeker.')
